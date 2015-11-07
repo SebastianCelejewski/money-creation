@@ -37,6 +37,29 @@ module MoneyCreation
             central_bank.bank_reserve += delta_reserve
         end
 
+        def borrow person, amount
+            abort "Bank has not enough cash to borrow #{amount}" if amount > @cash
+            @accounts[person].loan += amount
+            @cash -= amount
+            person.cash += amount
+            person.loan += amount
+        end
+
+        def return person, amount
+            borrow person, -amount
+        end
+
+        def deposit person, amount
+            @accounts[person].deposit += amount
+            @cash += amount
+            person.cash -= amount
+            person.deposit += amount
+        end
+
+        def withdraw person, amount
+            abort "#{person.name} cannot withdraw money, because bank has only #{@cash}" if amount > @cash
+            deposit person, -amount
+        end
         def status
             return "[Bank] Cash: #{@cash}"
         end
