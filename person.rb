@@ -1,5 +1,6 @@
 module MoneyCreation
     class Person
+        attr_accessor :name
         attr_accessor :cash
         attr_accessor :deposit
         attr_accessor :loan
@@ -12,7 +13,7 @@ module MoneyCreation
         end
 
         def status
-            return "#{@name}\t\t#{'% 9d' %@cash}\t#{'% 9d' %@loan}\t#{'% 9d' %@deposit}\t#{'% 9d' %(@cash+@deposit-@loan)}"
+            return "#{'%-10s' % @name} #{'% 9d' %@cash} #{'% 9d' %@loan} #{'% 9d' %@deposit} #{'% 9d' %(@cash+@deposit-@loan)}"
         end
     end
 end

@@ -14,17 +14,20 @@ module MoneyCreation
     class Bank
 
         attr_reader :cash
+        attr_accessor :interest_rate
 
         def initialize
             @accounts = Hash.new{|h,k| h[k] = BankAccount.new}
             @cash = 0
+            @interest_rate = 0
+            @bank_reserve
         end
 
         def deposit(person, amount)
             person.cash -= amount
             person.deposit += amount
             @cash += amount
-            @accounts[person].deposit += amount
+            @accounts[person].deposit += (amount * (1 + @interest_rate / 2)).to_i
         end
 
         def update_reserve central_bank
@@ -35,14 +38,19 @@ module MoneyCreation
 
             @cash -= delta_reserve
             central_bank.bank_reserve += delta_reserve
+            @bank_reserve = central_bank.bank_reserve
         end
 
         def borrow person, amount
-            abort "Bank has not enough cash to borrow #{amount}" if amount > @cash
-            @accounts[person].loan += amount
+            if amount > @cash
+                puts "FATAL: Bank cannot borrow #{amount}, because it has only #{@cash}" 
+                abort
+            end
+            loan = (amount * (1 + @interest_rate) + 1).to_i
+            @accounts[person].loan += loan
             @cash -= amount
             person.cash += amount
-            person.loan += amount
+            person.loan += loan
         end
 
         def return person, amount
@@ -57,7 +65,13 @@ module MoneyCreation
         end
 
         def withdraw person, amount
-            abort "#{person.name} cannot withdraw money, because bank has only #{@cash}" if amount > @cash
+            if amount > @cash + @bank_reserve
+                puts "FATAL: #{person.name} cannot withdraw #{amount}, because bank has only #{@cash} in cash + #{@bank_reserve} in Central Bank reserve" 
+                abort
+            end
+            if amount > @cash
+                puts "WARNING: Bank has only #{@cash} in cash, so if #{person.name} wants to withdraw #{amount}, bank has to use its reserve." 
+            end
             deposit person, -amount
         end
         def status

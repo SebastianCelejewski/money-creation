@@ -10,20 +10,22 @@ module MoneyCreation
 
     def MoneyCreation::print_status central_bank, people, bank
         puts central_bank.status
-        puts "Person               Cash        Loan     Deposit       Total"
+        puts "Person          Cash      Loan   Deposit     Total"
         people.each{|p| puts p.status}
         total_cash = people.inject(0){|sum,person| sum += person.cash} + central_bank.bank_reserve + bank.cash
         total_loan = people.inject(0){|sum,person| sum += person.loan}
         total_deposit = people.inject(0){|sum,person| sum += person.deposit}
-        puts "Central bank    #{'% 9d' %central_bank.bank_reserve}"
-        puts "Bank            #{'% 9d' %bank.cash}" 
-        puts "Total           #{'% 9d' %total_cash}\t#{'% 9d' %total_loan}\t#{'% 9d' %total_deposit}\t#{'% 9d' %(total_cash+total_deposit-total_loan)}"
+        puts "Central bank #{'% 7d' %central_bank.bank_reserve}"
+        puts "Bank         #{'% 7d' %bank.cash}" 
+        puts "Total      #{'% 9d' %total_cash} #{'% 9d' %total_loan} #{'% 9d' %total_deposit} #{'% 9d' %(total_cash+total_deposit-total_loan)}"
         puts bank.status
     end
 
     central_bank = CentralBank.new
     bank = Bank.new
     people = Array.new
+
+    bank.interest_rate = 0.20
 
     bank_owner = Person.new("Bank owner")
     p1 = Person.new("Person 1")
