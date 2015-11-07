@@ -30,17 +30,6 @@ module MoneyCreation
             @accounts[person].deposit += (amount * (1 + @interest_rate / 2)).to_i
         end
 
-        def update_reserve central_bank
-            total_deposits = @accounts.values.inject(0){|sum, account| sum += account.deposit}
-            required_reserve = total_deposits / 10
-
-            delta_reserve = required_reserve - central_bank.bank_reserve
-
-            @cash -= delta_reserve
-            central_bank.bank_reserve += delta_reserve
-            @bank_reserve = central_bank.bank_reserve
-        end
-
         def borrow person, amount
             if amount > @cash
                 puts "FATAL: Bank cannot borrow #{amount}, because it has only #{@cash}" 
@@ -74,6 +63,25 @@ module MoneyCreation
             end
             deposit person, -amount
         end
+   
+        def update_reserve central_bank
+            total_deposits = @accounts.values.inject(0){|sum, account| sum += account.deposit}
+            required_reserve = total_deposits / 10
+
+            delta_reserve = required_reserve - central_bank.bank_reserve
+
+            @cash -= delta_reserve
+            central_bank.bank_reserve += delta_reserve
+
+            if @cash < 0
+                puts "Bank is in trouble! It should have #{central_bank.bank_reserve} in Central Bank reserve, but it ran out of cash"
+                central_bank.bank_reserve += @cash
+                @cash = 0
+            end
+
+            @bank_reserve = central_bank.bank_reserve
+        end
+
         def status
             return "[Bank] Cash: #{@cash}"
         end

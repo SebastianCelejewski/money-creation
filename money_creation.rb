@@ -151,6 +151,10 @@ module MoneyCreation
     bank.return p1, p1.loan
     print_status central_bank, people, bank    
 
+    action "Bank has to update its reserve"
+    bank.update_reserve central_bank
+    print_status central_bank, people, bank
+
     action "Person 2 takes more of its money from the bank"
     bank.withdraw p2, p3.loan
     print_status central_bank, people, bank    
@@ -168,6 +172,10 @@ module MoneyCreation
     bank.return p3, p3.loan
     print_status central_bank, people, bank    
 
+    action "Bank has to update its reserve"
+    bank.update_reserve central_bank
+    print_status central_bank, people, bank
+
     action "Person 2 takes more of its money from the bank"
     bank.withdraw p2, p4.loan
     print_status central_bank, people, bank    
@@ -184,6 +192,10 @@ module MoneyCreation
     action "Person 4 returns its loan"
     bank.return p4, p4.loan
     print_status central_bank, people, bank    
+
+    action "Bank has to update its reserve"
+    bank.update_reserve central_bank
+    print_status central_bank, people, bank
 
     action "Person 2 takes all the rest its money from the bank"
     bank.withdraw p2, p2.deposit
