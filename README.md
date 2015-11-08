@@ -1,3 +1,4 @@
+[![Code Climate](https://codeclimate.com/github/SebastianCelejewski/money-creation/badges/gpa.svg)](https://codeclimate.com/github/SebastianCelejewski/money-creation)
 # Money Creation
 
 Simulation of money creation process.
