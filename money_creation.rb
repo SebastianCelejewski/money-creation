@@ -9,23 +9,44 @@ module MoneyCreation
     end
 
     def MoneyCreation::print_status central_bank, people, bank
-        puts central_bank.status
-        puts "Person          Cash      Loan   Deposit     Total"
+        puts "Person          Cash      Loan   Deposit     Total        M3"
         people.each{|p| puts p.status}
-        total_cash = people.inject(0){|sum,person| sum += person.cash} + central_bank.bank_reserve + bank.cash
+        total_cash = people.inject(0){|sum,person| sum += person.cash}
         total_loan = people.inject(0){|sum,person| sum += person.loan}
         total_deposit = people.inject(0){|sum,person| sum += person.deposit}
-        puts "Central bank #{'% 7d' %central_bank.bank_reserve}"
-        puts "Bank         #{'% 7d' %bank.cash}" 
-        puts "Total      #{'% 9d' %total_cash} #{'% 9d' %total_loan} #{'% 9d' %total_deposit} #{'% 9d' %(total_cash+total_deposit-total_loan)}"
-        puts bank.status
+
+        bank_loan = total_deposit
+        bank_deposit = total_loan + central_bank.bank_reserve
+
+        central_bank_cash = central_bank.cash + central_bank.bank_reserve
+        central_bank_loan = central_bank.bank_reserve
+        central_bank_deposit = 0
+
+        total_cash += bank.cash + central_bank_cash
+        total_loan += bank_loan + central_bank_loan
+        total_deposit += bank_deposit + central_bank_deposit
+
+        puts "Central bank #{'% 7d' %central_bank_cash} #{'% 9d' %central_bank_loan} #{'% 9d' %central_bank_deposit} #{'% 9d' %(central_bank_cash+central_bank_deposit-central_bank_loan)} #{'% 9d' %(central_bank_cash+central_bank_deposit)}"
+        puts "Bank         #{'% 7d' %bank.cash} #{'% 9d' %bank_loan} #{'% 9d' %bank_deposit} #{'% 9d' %(bank.cash+bank_deposit-bank_loan)} #{'% 9d' %(bank.cash+bank_deposit)}"  
+        puts "Total      #{'% 9d' %total_cash} #{'% 9d' %total_loan} #{'% 9d' %total_deposit} #{'% 9d' %(total_cash+total_deposit-total_loan)} #{'% 9d' %(total_cash+total_deposit)}"
     end
+
+    if ARGV.length != 3
+        puts "Usage: ruby money_creation.rb <required_reserve_%> <loan_interest_rate_%> <deposit_interest_rate_%>"
+        abort
+    end
+
+    required_reserve = ARGV[0].to_f/100
+    loan_interest_rate = ARGV[1].to_f/100
+    deposit_interest_rate = ARGV[2].to_f/100
 
     central_bank = CentralBank.new
     bank = Bank.new
     people = Array.new
 
-    bank.interest_rate = 0.20
+    bank.required_reserve = required_reserve
+    bank.loan_interest_rate = loan_interest_rate
+    bank.deposit_interest_rate = deposit_interest_rate
 
     bank_owner = Person.new("Bank owner")
     p1 = Person.new("Person 1")
@@ -40,6 +61,11 @@ module MoneyCreation
     people << p3
     people << p4
     people << p5
+
+    puts "Configuration:"
+    puts "Required reserve: #{'%2.1d' % (required_reserve * 100)}%"
+    puts "Loan interest rate: #{'%2.1d' % (loan_interest_rate * 100)}%"
+    puts "Deposit interest rate: #{'%2.1d' % (deposit_interest_rate * 100)}%"
 
     action "Initial situation"
 

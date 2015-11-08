@@ -19,9 +19,5 @@ module MoneyCreation
             @cash = @cash - amount
             person.cash = person.cash + amount
         end
-
-        def status
-            return "[Central Bank] Monetary base: #{@monetary_base}, cash: #{@cash}, bank reserve: #{bank_reserve}"
-        end
     end
 end

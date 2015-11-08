@@ -14,12 +14,16 @@ module MoneyCreation
     class Bank
 
         attr_reader :cash
-        attr_accessor :interest_rate
+        attr_accessor :loan_interest_rate
+        attr_accessor :deposit_interest_rate
+        attr_accessor :required_reserve
 
         def initialize
             @accounts = Hash.new{|h,k| h[k] = BankAccount.new}
             @cash = 0
-            @interest_rate = 0
+            @loan_interest_rate = 0
+            @deposit_interest_rate = 0
+            @required_reserve = 0
             @bank_reserve
         end
 
@@ -27,7 +31,7 @@ module MoneyCreation
             person.cash -= amount
             person.deposit += amount
             @cash += amount
-            @accounts[person].deposit += (amount * (1 + @interest_rate / 2)).to_i
+            @accounts[person].deposit += (amount * (1 + @deposit_interest_rate / 2)).to_i
         end
 
         def borrow person, amount
@@ -35,7 +39,7 @@ module MoneyCreation
                 puts "FATAL: Bank cannot borrow #{amount}, because it has only #{@cash}" 
                 abort
             end
-            loan = (amount * (1 + @interest_rate) + 1).to_i
+            loan = (amount * (1 + @loan_interest_rate) + 1).to_i
             @accounts[person].loan += loan
             @cash -= amount
             person.cash += amount
@@ -66,7 +70,7 @@ module MoneyCreation
    
         def update_reserve central_bank
             total_deposits = @accounts.values.inject(0){|sum, account| sum += account.deposit}
-            required_reserve = total_deposits / 10
+            required_reserve = (total_deposits * @required_reserve).to_i
 
             delta_reserve = required_reserve - central_bank.bank_reserve
 
@@ -80,10 +84,6 @@ module MoneyCreation
             end
 
             @bank_reserve = central_bank.bank_reserve
-        end
-
-        def status
-            return "[Bank] Cash: #{@cash}"
         end
     end
 end
