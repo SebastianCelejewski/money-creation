@@ -22,3 +22,15 @@ Simulation of money creation process.
 - All actors can have cash, loan and deposits
 - M0 (monetary base) = cash
 - M3 (money supply) = cash + deposist
+
+## Usage
+
+`Usage: ruby money_creation.rb <required_reserve_%> <loan_interest_rate_%> <deposit_interest_rate_%>`
+
+Example:
+
+`ruby money_creation.rb 10 20 10`
+
+## Screenshot
+
+![Screenshot](https://raw.githubusercontent.com/SebastianCelejewski/money-creation/master/doc/money_creation.png)
